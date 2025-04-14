@@ -1,114 +1,64 @@
-# UI for Athlete Comparison Module
-compare_ui <- function(id) {
-    ns <- NS(id)
-    tagList(
-        fluidRow(
-            column(
-                6,
-                selectizeInput(
-                    ns("athlete1"),
-                    "Athlete 1:",
-                    choices = NULL,
-                    options = list(maxOptions = 5)
-                )
-            ),
-            column(
-                6,
-                selectizeInput(
-                    ns("athlete2"),
-                    "Athlete 2:",
-                    choices = NULL,
-                    options = list(maxOptions = 5)
-                )
-            )
+create_density_plot <- function(
+  data,
+  lift_col,
+  xaxis_title,
+  user_val = 0
+) {
+  # Если недостаточно данных для оценки плотности, возвращаем пустой график с сообщением
+  if (nrow(data) < 2) {
+    p <- plot_ly() %>%
+      layout(
+        title = list(
+          text = "Not enough data for density estimation",
+          x = 0.5
         ),
-        fluidRow(
-            column(
-                12,
-                plotlyOutput(ns("comparison_plot"), height = "500px")
-            )
+        xaxis = list(title = xaxis_title),
+        yaxis = list(title = "Density")
+      )
+    return(p)
+  }
+
+  # Расчёт плотности для выбранной переменной
+  dens <- density(data[[lift_col]], na.rm = TRUE)
+
+  # Вычисляем квантиль для user_val на основе эмпирической функции распределения
+  q_val <- ecdf(data[[lift_col]])(user_val)
+
+  # Создаем график плотности с plot_ly
+  p <- plot_ly(
+    x = dens$x,
+    y = dens$y,
+    type = 'scatter',
+    mode = 'lines',
+    line = list(color = "#3498db")
+  ) %>%
+    layout(
+      xaxis = list(title = xaxis_title),
+      yaxis = list(title = "Density"),
+      # Добавляем вертикальную линию, соответствующую значению user_val
+      shapes = list(
+        list(
+          type = "line",
+          x0 = user_val,
+          x1 = user_val,
+          y0 = 0,
+          y1 = max(dens$y) * 1.1,
+          xref = "x",
+          yref = "y",
+          line = list(color = "red", dash = "dash")
         )
+      ),
+      # Добавляем аннотацию с квантилью
+      annotations = list(
+        list(
+          x = user_val,
+          y = max(dens$y) * 1.1,
+          text = paste0("Q: ", round(q_val, 3) * 100, "%"),
+          xref = "x",
+          yref = "y",
+          showarrow = FALSE
+        )
+      )
     )
-}
-
-# Server Logic for Athlete Comparison
-compare_server <- function(id, data) {
-    moduleServer(id, function(input, output, session) {
-        # Update athlete selection dropdowns
-        observe({
-            req(data())
-            athletes <- unique(data()$name)
-            updateSelectizeInput(
-                session,
-                "athlete1",
-                choices = athletes,
-                server = TRUE
-            )
-            updateSelectizeInput(
-                session,
-                "athlete2",
-                choices = athletes,
-                server = TRUE
-            )
-        })
-
-        # Prepare comparison data in long format
-        comparison_data <- reactive({
-            req(input$athlete1, input$athlete2)
-
-            data() %>%
-                filter(name %in% c(input$athlete1, input$athlete2)) %>%
-                select(
-                    name,
-                    best_squat,
-                    best_bench,
-                    best_deadlift,
-                    total,
-                    weight_class
-                ) %>%
-                pivot_longer(
-                    cols = -c(name, weight_class),
-                    names_to = "lift",
-                    values_to = "weight"
-                ) %>%
-                mutate(
-                    lift = factor(
-                        lift,
-                        levels = c(
-                            "best_squat",
-                            "best_bench",
-                            "best_deadlift",
-                            "total"
-                        ),
-                        labels = c("Squat", "Bench", "Deadlift", "Total")
-                    )
-                )
-        })
-
-        # Render comparison plot
-        output$comparison_plot <- renderPlotly({
-            df <- comparison_data()
-            validate(
-                need(nrow(df) > 0, "Please select two athletes to compare")
-            )
-
-            ggplotly(
-                ggplot(
-                    df,
-                    aes(x = lift, y = weight, fill = name)
-                ) +
-                geom_col(position = "dodge") +
-                labs(
-                    title = "Performance Comparison",
-                    x = "",
-                    y = "Weight (kg)",
-                    fill = "Athlete"
-                ) +
-                theme_minimal() +
-                scale_fill_manual(
-                    values = c("#2c3e50", "#18bc9c")
-                )
-            )
-        })
-    })
+  return(p)
 }

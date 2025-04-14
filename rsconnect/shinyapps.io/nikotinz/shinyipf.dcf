@@ -1,0 +1,10 @@
+name: shinyipf
+title:
+username: nikotinz
+account: nikotinz
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14518082
+bundleId: 10115021
+url: https://nikotinz.shinyapps.io/shinyipf/
+version: 1
