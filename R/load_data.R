@@ -13,13 +13,10 @@ data_clean <- full_data %>%
 
 data_clean <- data_clean %>%
   mutate(
-    # Заменяем "+" на пустую строку и преобразуем в число
     weight_num = as.numeric(gsub("[+]", "", weight_class)),
     
-    # Заменяем NA на Inf (для удобства обработки)
     weight_num = if_else(is.na(weight_num), Inf, weight_num),
     
-    # Приводим пол к верхнему регистру и убираем пробелы
     sex_clean = toupper(trimws(sex))) %>% 
     select(-sex) %>% 
     rename(sex = sex_clean)
@@ -27,7 +24,6 @@ data_clean <- data_clean %>%
 data_clean <- data_clean %>%
   mutate(
     modern_class = case_when(
-      # Обработка для Sub-Junior & Junior (birth_year_class "14-18" или "19-23")
       birth_year_class %in% c("14-18", "19-23") & 
         sex == "M" & between(weight_num, 0, 53) ~ "53",
       birth_year_class %in% c("14-18", "19-23") & 
@@ -66,7 +62,6 @@ data_clean <- data_clean %>%
       birth_year_class %in% c("14-18", "19-23") & 
         sex == "F" & weight_num > 84 ~ "84+",
       
-      # Обработка для остальных (например, взрослых)
       !birth_year_class %in% c("14-18", "19-23") & 
         sex == "M" & between(weight_num, 0, 59) ~ "59",
       !birth_year_class %in% c("14-18", "19-23") & 
@@ -101,7 +96,7 @@ data_clean <- data_clean %>%
       !birth_year_class %in% c("14-18", "19-23") & 
         sex == "F" & weight_num > 84 ~ "84+",
       
-      # Если ни одно условие не выполнилось — NA (или можно заменить на "UNKNOWN")
+
       TRUE ~ NA_character_
     )
   ) %>% 

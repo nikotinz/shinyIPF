@@ -1,5 +1,4 @@
 server <- function(input, output, session) {
-  # Update weight class choices based on selected gender
   observeEvent(input$gender_selector, {
     if (input$gender_selector == "M") {
       updateSelectInput(
@@ -18,7 +17,6 @@ server <- function(input, output, session) {
     }
   })
 
-  # Reactive filtered data based on filters
   filtered_df <- reactive({
     df <- ipf_df
     if (!is.null(input$gender_selector) && input$gender_selector != "all") {

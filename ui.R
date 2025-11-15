@@ -11,7 +11,7 @@ ui <- grid_page(
   row_sizes = c("125px", "1fr", "1fr"),
   col_sizes = c("250px", "1fr", "1fr", "1fr"),
   gap_size = "1rem",
-  # Header area
+
   grid_card_text(
     area = "header",
     content = HTML(
@@ -33,7 +33,7 @@ ui <- grid_page(
         label = "Enter your squat",
         value = 0,
         min = 0,
-        width = "100%" # Optionally, adjust the width as well
+        width = "100%" 
       )
     )
   ),
@@ -45,7 +45,7 @@ ui <- grid_page(
         label = "Enter your bench",
         value = 0,
         min = 0,
-        width = "100%" # Optionally, adjust the width as well
+        width = "100%" 
       )
     )
   ),
@@ -57,11 +57,11 @@ ui <- grid_page(
         label = "Enter your deadlift",
         value = 0,
         min = 0,
-        width = "100%" # Optionally, adjust the width as well
+        width = "100%" 
       )
     )
   ),
-  # Sidebar area for settings
+
   grid_card(
     area = "sidebar",
     card_header("Settings"),
@@ -117,7 +117,7 @@ ui <- grid_page(
       em("Select the parameters to view the lifts distribution.")
     )
   ),
-  # Plot areas for each lift
+
   grid_card(
     area = "plot_squat",
     card_header("Squat Density"),
@@ -151,13 +151,13 @@ ui <- grid_page(
       )
     )
   ),
-  # Full-width information area with generic markdown text placeholder
+
   grid_card(
     area = "info",
     card_header("Information"),
     card_body(
       HTML(
-        "<p>Generic markdown text goes here.</p>"
+        "<p>Use this app to review and analyse powerlifting results. Enter your lift values above, select your gender, weight class, age category, and federation to filter the data. Visualizations will update automatically to help you compare your performance with others.</p>"
       )
     )
   ),

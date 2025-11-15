@@ -24,12 +24,12 @@ ipf_raw <- read_csv(
     Best3DeadliftKg = col_double(),
     TotalKg = col_double(),
     Federation = col_character(),
-    .default = col_skip() # Пропускаем все остальные столбцы
+    .default = col_skip() 
   ),
   progress = FALSE
 )
 
-# Проверка проблемных строк
+
 if (exists("problems", where = ipf_raw)) {
   problems_df <- problems(ipf_raw)
   write_csv(problems_df, "data/problems_log.csv")
