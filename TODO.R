@@ -19,10 +19,6 @@
 
 shiny::runApp("C:/GIT/shinyIPF/")
 
-rsconnect::setAccountInfo(
-  name = 'nikotinz',
-  token = 'EF56D61AD571EC61D59DB6C74D67378C',
-  secret = 'Ec2cCC5NBqauj/m+/cV3kgwH6yd6drnlBMYXAr9A'
-)
+
 
 rsconnect::deployApp('C:/GIT/shinyIPF/')
